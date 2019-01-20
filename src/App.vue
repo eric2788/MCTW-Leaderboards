@@ -239,7 +239,6 @@
                     }
                 ],
                 rowsPerPageItems: [{text: 'All', value: 100}],
-                url: '',
             }
         },
         methods: {
@@ -254,9 +253,9 @@
                 let res_success = true;
                 window.console.log('getting all data...');
                 this.loading = true;
-                const url = this.url;
                 let servers = this.servers;
                 for (let i = 0; i < servers.length; i++) {
+                    let url = servers[i].url;
                     this.$axios.get(url + servers[i].port + '/economy').then(eco => {
                         eco_list.push(...eco.data);
                         //window.console.log(eco.data.length)
@@ -298,14 +297,14 @@
                 this.loading = false;
 
             },
-            async get_rank(port) {
+            async get_rank(port, url) {
                 if (this.loading) return;
                 this.database = [];
                 let eco_success = true;
                 let res_success = true;
                 let vip_success = true;
                 window.console.log('getting data...');
-                const link = this.url + +port + '/';
+                const link = url + port + '/';
                 this.loading = true;
                 this.$axios.get(link + 'economy').then(eco => {
                     this.database.push({
@@ -349,17 +348,15 @@
                     let server = this.servers;
                     server = server.find(data => data.server === this.selected_server);
                     let port = server.port;
-                    this.get_rank(port);
+                    let url = server.url;
+                    this.get_rank(port, url);
                 } else {
                     this.get_all_rank();
                 }
             },
             setDefault(val) {
                 this.selected_server = val.server;
-                this.get_rank(val.port)
-            },
-            setURL(val) {
-                this.url = val;
+                this.get_rank(val.port, val.url)
             },
             changeStyle(index) {
                 this.style = this.styles[index];
@@ -398,12 +395,6 @@
         },
         beforeCreate() {
             const servers = () => import('../public/json/servers.json');
-            const api = () => import('../public/json/api.json');
-
-            fetch("./json/api.json").then(r => r.json()).then(data => {
-                this.setURL(data.url);
-            }).catch(() => this.$store.commit('setURL', api.url));
-
 
             fetch("./json/servers.json").then(r => r.json()).then(data => {
                 this.$store.commit('setServerList', data);

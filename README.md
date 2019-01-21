@@ -1,5 +1,5 @@
 # MCTW-Leaderboards
-台灣創世神果度 - 百人排行榜
+台灣創世神國度 - 百人排行榜
 
 不經資料庫，直接使用 [WebAPI](https://github.com/eric2788/MCTW-WebAPI) 到伺服器提取數據
 

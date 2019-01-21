@@ -1,7 +1,7 @@
 [
   {
     "server": "1 服",
-    "port": 9090,
+    "port": 9191,
     "url": "//localhost:"
   },
   {
@@ -16,7 +16,7 @@
   },
   {
     "server": "4 服",
-    "port": 9993,
+    "port": 9090,
     "url": "//localhost:"
   }
 ]

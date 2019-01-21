@@ -5,14 +5,22 @@
                 <span class="font-weight-bold">台灣創世神國度</span>
                 <span class="font-weight-light"> - 百大排行榜</span>
             </v-toolbar-title>
+            <v-chip :class="style.in_toolbar" :dark="style.toolbar_dark" class="ml-3" label small
+                    v-if="selected_server !== '全服'">上次更新 {{!!last_update ? last_update : '加載失敗'}}
+            </v-chip>
             <v-spacer></v-spacer>
+            <span class="headline" v-if="test">測試用，請勿用在非測試用途。</span>
             <v-btn @click="changePort" flat outline>刷新</v-btn>
         </v-toolbar>
         <v-content :class="style.content">
             <v-progress-linear :active="loading" :color="style.progress_color" :value="loading_value" class="ma-0"
                                height="3px"></v-progress-linear>
             <v-container :pl-5="!isDestop" :pr-5="!isDestop" grid-list-md>
-                <v-fab-transition v-if="!isDestop">
+                <v-alert :value="test" color="warning" transition="fade-transition" type="error">注意！此網站僅為測試用，請勿用於非測試用途。
+                    本服網站由 <strong><a class="white--text" href="//github.com/eric2788">EricLam</a></strong>
+                    製作，付費後測試字條將會被刪掉。
+                </v-alert>
+                <v-fab-transition>
                     <v-speed-dial bottom fab
                                   fixed right transition="slide-y-reverse-transition" v-model="fab">
                         <v-btn
@@ -132,7 +140,7 @@
                         represent_color: 'primary darken-4',
                         represent_text: '深藍',
                         represent_dark: true,
-                        progress_color: 'primary lighten-4'
+                        progress_color: 'error'
                     },
                     {
                         //Dark Red
@@ -147,7 +155,7 @@
                         represent_color: 'error darken-4',
                         represent_text: '深紅',
                         represent_dark: true,
-                        progress_color: 'error lighten-4'
+                        progress_color: 'primary'
                     },
                     {
                         // Blue
@@ -162,7 +170,7 @@
                         represent_color: 'primary',
                         represent_text: '藍',
                         represent_dark: true,
-                        progress_color: 'primary darken-4'
+                        progress_color: 'error'
                     },
                     {
                         //Orange
@@ -177,7 +185,7 @@
                         represent_color: 'warning',
                         represent_text: '橙',
                         represent_dark: true,
-                        progress_color: 'orange darken-4'
+                        progress_color: 'red darken-4'
                     },
                     {
                         //Green
@@ -207,7 +215,7 @@
                         represent_color: 'purple',
                         represent_text: '紫',
                         represent_dark: true,
-                        progress_color: 'purple darken-4'
+                        progress_color: 'purple darken-1'
                     }
                 ],
                 database: [],
@@ -241,7 +249,8 @@
                 ],
                 rowsPerPageItems: [{text: 'All', value: 100}],
                 loading_value: 0,
-
+                last_update: '',
+                test: true
             }
         },
         methods: {
@@ -306,10 +315,10 @@
                         },);
                     this.loading_value = 100;
                     this.loading = false;
-                }, 2000);
+                }, 3000);
                 setTimeout(() => {
                     this.loading_value = 0;
-                }, 3000)
+                }, 4000)
 
 
             },
@@ -361,10 +370,12 @@
                     this.loading_value = 100;
                     this.loading = false;
 
-                }, 2000);
+                }, 3000);
                 setTimeout(() => {
                     this.loading_value = 0;
-                }, 3000)
+                }, 4000);
+
+                this.$axios.get(link + 'refresh_data').then(res => this.last_update = res.data.last_update)
 
             },
             filteredItems(items, search) {

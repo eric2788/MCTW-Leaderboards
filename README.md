@@ -8,3 +8,8 @@
 
 ## 進度條加載演示
 ![進度條加載](https://gyazo.com/61b10d4dfa75851ab6e0ac06078770cd.gif)
+
+## 全服排行榜演示
+![加載](https://gyazo.com/cc94f8d84edb81f5c4d17349773a9cc5.gif)
+
+![圖](https://i.gyazo.com/e5a2bfc75af89ec375b4e0d2d07d2ef8.png)

@@ -9,8 +9,8 @@
             <v-btn @click="changePort" flat outline>刷新</v-btn>
         </v-toolbar>
         <v-content :class="style.content">
-            <v-progress-linear :active="loading" :color="style.progress_color" class="ma-0" height="4px"
-                               indeterminate></v-progress-linear>
+            <v-progress-linear :active="loading" :color="style.progress_color" :value="loading_value" class="ma-0"
+                               height="3px"></v-progress-linear>
             <v-container :pl-5="!isDestop" :pr-5="!isDestop" grid-list-md>
                 <v-fab-transition v-if="!isDestop">
                     <v-speed-dial bottom fab
@@ -67,6 +67,7 @@
                                         <td>{{data.type.match('經濟') ? '$' : ''}} {{props.item.group!=null ?
                                             props.item.group : props.item.data}} {{data.type.match('領地') ? ' 格' : ''}}
                                         </td>
+                                        <td v-if="selected_server === '全服'">{{props.item.server}}</td>
                                     </template>
                                 </v-data-table>
                             </v-flex>
@@ -239,80 +240,98 @@
                     }
                 ],
                 rowsPerPageItems: [{text: 'All', value: 100}],
+                loading_value: 0,
+
             }
         },
         methods: {
             async get_all_rank() {
-                if (this.loading) return;
                 this.all_database = [];
                 let eco_list = [];
                 let vip_list = [];
                 let res_list = [];
-                let eco_success = true;
-                let vip_success = true;
-                let res_success = true;
+                let eco_success = false;
+                let vip_success = false;
+                let res_success = false;
                 window.console.log('getting all data...');
                 this.loading = true;
+                this.loading_value = 0;
                 let servers = this.servers;
                 for (let i = 0; i < servers.length; i++) {
                     let url = servers[i].url;
                     this.$axios.get(url + servers[i].port + '/economy').then(eco => {
                         eco_list.push(...eco.data);
-                        //window.console.log(eco.data.length)
+                        eco_success = true;
+                        this.loading_value += 15;
                     }).catch(() => {
-                        eco_success = false;
+
                     });
 
                     this.$axios.get(url + servers[i].port + '/viprank').then(vip => {
                         vip_list.push(...vip.data);
-                        //window.console.log(vip.data.length)
+                        vip_success = true;
+                        this.loading_value += 15;
                     }).catch(() => {
-                        vip_success = false;
+
                     });
 
                     this.$axios.get(url + servers[i].port + '/residence').then(res => {
                         res_list.push(...res.data);
-                        //window.console.log(res.data.length)
+                        res_success = true;
+                        this.loading_value += 15;
                     }).catch(() => {
-                        res_success = false;
+
                     });
                 }
                 window.console.log(eco_list.length + ' ' + vip_list.length + ' ' + res_list.length);
-                if (!res_success || !vip_success || !eco_success) {
-                    this.update_fail = true;
-                }
-                this.all_database.push(
-                    {
-                        type: "經濟排行",
-                        list: eco_list
-                    },
-                    {
-                        type: "VIP階級排行",
-                        list: vip_list
-                    },
-                    {
-                        type: "領地排行",
-                        list: res_list
-                    },);
-                this.loading = false;
+                setTimeout(() => {
+                    if (!res_success || !vip_success || !eco_success) {
+                        this.update_fail = true;
+                        this.loading = false;
+                        return;
+                    }
+
+                    this.all_database.push(
+                        {
+                            type: "經濟排行",
+                            list: eco_list
+                        },
+                        {
+                            type: "VIP階級排行",
+                            list: vip_list
+                        },
+                        {
+                            type: "領地排行",
+                            list: res_list
+                        },);
+                    this.loading_value = 100;
+                    this.loading = false;
+                }, 2000);
+                setTimeout(() => {
+                    this.loading_value = 0;
+                }, 3000)
+
 
             },
             async get_rank(port, url) {
-                if (this.loading) return;
                 this.database = [];
-                let eco_success = true;
-                let res_success = true;
-                let vip_success = true;
+                let eco_success = false;
+                let res_success = false;
+                let vip_success = false;
                 window.console.log('getting data...');
                 const link = url + port + '/';
                 this.loading = true;
+                this.loading_value = 0;
                 this.$axios.get(link + 'economy').then(eco => {
+
                     this.database.push({
                         type: "經濟排行",
                         list: eco.data
                     });
+                    this.loading_value += 30;
+                    eco_success = true;
                 }).catch(() => {
-                    eco_success = false;
+
                 });
 
                 this.$axios.get(link + 'viprank').then(vip => {
@@ -320,8 +339,10 @@
                         type: "VIP階級排行",
                         list: vip.data
                     });
+                    this.loading_value += 30;
+                    vip_success = true;
                 }).catch(() => {
-                    vip_success = false;
+
                 });
 
                 this.$axios.get(link + 'residence').then(res => {
@@ -329,14 +350,22 @@
                         type: "領地排行",
                         list: res.data
                     });
-                    this.loading = false;
+                    this.loading_value += 30;
+                    res_success = true;
                 }).catch(() => {
-                    res_success = false;
-                    this.loading = false;
+
                 });
 
-                window.console.log('list length: ' + this.database.length);
-                if (!res_success || !vip_success || !eco_success) this.update_fail = true;
+                setTimeout(() => {
+                    if (!res_success || !vip_success || !eco_success) this.update_fail = true;
+                    this.loading_value = 100;
+                    this.loading = false;
+
+                }, 2000);
+                setTimeout(() => {
+                    this.loading_value = 0;
+                }, 3000)
+
             },
             filteredItems(items, search) {
                 let result = items;
@@ -345,12 +374,18 @@
             },
             changePort() {
                 if (this.selected_server !== '全服') {
+                    if (this.headers.length > 4) this.headers.pop();
                     let server = this.servers;
                     server = server.find(data => data.server === this.selected_server);
                     let port = server.port;
                     let url = server.url;
                     this.get_rank(port, url);
                 } else {
+                    if (this.headers.length < 5) this.headers.push({
+                        text: '所在伺服',
+                        value: 'server',
+                        sortable: false
+                    });
                     this.get_all_rank();
                 }
             },

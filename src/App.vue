@@ -298,17 +298,18 @@
 
                     this.all_database.push(
                         {
-                            type: "經濟排行",
-                            list: eco_list
+                            type: "領地排行",
+                            list: res_list
                         },
                         {
                             type: "VIP階級排行",
                             list: vip_list
                         },
                         {
-                            type: "領地排行",
-                            list: res_list
-                        },);
+                            type: "經濟排行",
+                            list: eco_list
+                        },
+                    );
                     this.loading_value = 100;
                     this.loading = false;
                 }, 3000);
@@ -327,19 +328,19 @@
                 const link = url + port + '/';
                 this.loading = true;
                 this.loading_value = 0;
-                this.$axios.get(link + 'economy').then(eco => {
 
+                await this.$axios.get(link + 'residence').then(res => {
                     this.database.push({
-                        type: "經濟排行",
-                        list: eco.data
+                        type: "領地排行",
+                        list: res.data
                     });
                     this.loading_value += 30;
-                    eco_success = true;
+                    res_success = true;
                 }).catch(() => {
 
                 });
 
-                this.$axios.get(link + 'viprank').then(vip => {
+                await this.$axios.get(link + 'viprank').then(vip => {
                     this.database.push({
                         type: "VIP階級排行",
                         list: vip.data
@@ -350,13 +351,15 @@
 
                 });
 
-                this.$axios.get(link + 'residence').then(res => {
+
+                await this.$axios.get(link + 'economy').then(eco => {
+
                     this.database.push({
-                        type: "領地排行",
-                        list: res.data
+                        type: "經濟排行",
+                        list: eco.data
                     });
                     this.loading_value += 30;
-                    res_success = true;
+                    eco_success = true;
                 }).catch(() => {
 
                 });

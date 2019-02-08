@@ -9,18 +9,14 @@
                     v-if="selected_server !== '全服'">上次更新 {{!!last_update ? last_update : '加載失敗'}}
             </v-chip>
             <v-spacer></v-spacer>
-            <span class="headline" v-if="test">測試用，請勿用在非測試用途。</span>
             <v-btn @click="changePort" flat outline>刷新</v-btn>
+            <v-btn flat href="http://minecraftx.ddnsking.com/" outline>返回主頁</v-btn>
         </v-toolbar>
         <v-content :class="style.content">
             <v-progress-linear :active="loading" :color="style.progress_color" :value="loading_value" class="ma-0"
                                height="3px"></v-progress-linear>
             <v-container :pl-5="!isDestop" :pr-5="!isDestop" grid-list-md>
-                <v-alert :value="test" color="warning" transition="fade-transition" type="error">注意！此網站僅為測試用，請勿用於非測試用途。
-                    本服網站由 <strong><a class="white--text" href="//github.com/eric2788">EricLam</a></strong>
-                    製作，付費後測試字條將會被刪掉。
-                </v-alert>
-                <v-fab-transition>
+                <!--v-fab-transition>
                     <v-speed-dial bottom fab
                                   fixed right transition="slide-y-reverse-transition" v-model="fab">
                         <v-btn
@@ -38,7 +34,7 @@
                                fab small v-for="(sty,i) in styles">{{sty.represent_text}}
                         </v-btn>
                     </v-speed-dial>
-                </v-fab-transition>
+                </v-fab-transition-->
                 <v-card :class="style.card">
                     <v-card-title :class="style.card_title">
                         <v-layout :class="(isMobile ? 'column' : 'wrap')">
@@ -111,7 +107,7 @@
                     represent_dark: true,
                     progress_color: 'yellow'
                 },
-                styles: [
+                /*styles: [
                     {
                         //Dark Theme
                         content: ['grey', 'darken-3'],
@@ -217,7 +213,7 @@
                         represent_dark: true,
                         progress_color: 'purple darken-1'
                     }
-                ],
+                ],*/
                 database: [],
                 all_database: [],
                 selected_server: '',
@@ -250,7 +246,7 @@
                 rowsPerPageItems: [{text: 'All', value: 100}],
                 loading_value: 0,
                 last_update: '',
-                test: true
+                test: false
             }
         },
         methods: {
@@ -271,7 +267,7 @@
                     this.$axios.get(url + servers[i].port + '/economy').then(eco => {
                         eco_list.push(...eco.data);
                         eco_success = true;
-                        this.loading_value += 15;
+                        this.loading_value += 9;
                     }).catch(() => {
 
                     });
@@ -279,7 +275,7 @@
                     this.$axios.get(url + servers[i].port + '/viprank').then(vip => {
                         vip_list.push(...vip.data);
                         vip_success = true;
-                        this.loading_value += 15;
+                        this.loading_value += 9;
                     }).catch(() => {
 
                     });
@@ -287,7 +283,7 @@
                     this.$axios.get(url + servers[i].port + '/residence').then(res => {
                         res_list.push(...res.data);
                         res_success = true;
-                        this.loading_value += 15;
+                        this.loading_value += 9;
                     }).catch(() => {
 
                     });
